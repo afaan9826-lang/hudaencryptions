@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HudaEncryptions — Secure Text Encryption & Decryption</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+    <style>
+        :root {
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --radius-xl: 22px;
+            --radius-lg: 15px;
+            --radius-md: 11px;
+            --radius-sm: 9px;
+            --radius-full: 50px;
+            --transition: 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            --accent: #7c5cfc;
+            --accent-glow: rgba(124, 92, 252, 0.4);
+            --accent-light: #9d85ff;
+            --accent-gradient: linear-gradient(135deg, #7c5cfc 0%, #5b8def 55%, #4fd1c5 100%);
+            --accent-gradient-hover: linear-gradient(135deg, #9178ff 0%, #72a3f7 55%, #5ee0d5 100%);
+            --success: #22c55e;
+            --success-bg: rgba(34, 197, 94, 0.12);
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.12);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.12);
+            --info: #3b82f6;
+            --info-bg: rgba(59, 130, 246, 0.12);
+            --strength-weak: #ef4444;
+            --strength-fair: #f59e0b;
+            --strength-good: #84cc16;
+            --strength-strong: #22c55e;
+        }
+        [data-theme="dark"] {
+            --bg: linear-gradient(155deg, #040410 0%, #0a0a1e 18%, #0c0c24 35%, #08081c 50%, #050514 65%, #0b0b1e 82%, #060612 100%);
+            --bg-orb1: radial-gradient(circle at 20% 30%, rgba(124, 92, 252, 0.06) 0%, transparent 60%);
+            --bg-orb2: radial-gradient(circle at 75% 65%, rgba(79, 209, 197, 0.05) 0%, transparent 55%);
+            --bg-orb3: radial-gradient(circle at 50% 80%, rgba(91, 141, 239, 0.04) 0%, transparent 50%);
+            --panel-bg: rgba(14, 14, 34, 0.48);
+            --panel-bg-hover: rgba(18, 18, 44, 0.58);
+            --panel-border: rgba(255, 255, 255, 0.06);
+            --panel-shadow: 0 10px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.025);
+            --input-bg: rgba(8, 8, 24, 0.52);
+            --input-bg-focus: rgba(12, 12, 34, 0.72);
+            --input-border: rgba(255, 255, 255, 0.07);
+            --input-border-focus: rgba(124, 92, 252, 0.5);
+            --text-primary: #e6e6f2;
+            --text-secondary: #babad0;
+            --text-muted: #808098;
+            --text-heading: #f2f2fa;
+            --text-input: #dedeec;
+            --placeholder: #5c5c78;
+            --icon-color: #c4c4d8;
+            --divider: rgba(255, 255, 255, 0.05);
+            --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+            --scrollbar-track: transparent;
+            --badge-bg: rgba(124, 92, 252, 0.2);
+            --badge-text: #bfb1ff;
+            --toast-bg: rgba(16, 16, 40, 0.94);
+            --toast-text: #e6e6f2;
+            --tab-inactive-bg: rgba(255, 255, 255, 0.025);
+            --tab-active-bg: rgba(124, 92, 252, 0.16);
+            --tab-active-border: rgba(124, 92, 252, 0.5);
+            --strength-bar-bg: rgba(255, 255, 255, 0.06);
+            --nav-bg: rgba(10, 10, 26, 0.55);
+            --nav-border: rgba(255, 255, 255, 0.04);
+            --toggle-bg: rgba(28, 28, 54, 0.55);
+            --toggle-border: rgba(255, 255, 255, 0.07);
+            --hero-glow: 0 0 80px rgba(124, 92, 252, 0.12);
+            --card-spark: rgba(255, 255, 255, 0.015);
+        }
+        [data-theme="light"] {
+            --bg: linear-gradient(155deg, #f0f2f8 0%, #e8ebf4 18%, #f2f5fb 35%, #edf1f7 50%, #f5f7fc 65%, #eff2f8 82%, #f4f5fa 100%);
+            --bg-orb1: radial-gradient(circle at 20% 30%, rgba(124, 92, 252, 0.04) 0%, transparent 60%);
+            --bg-orb2: radial-gradient(circle at 75% 65%, rgba(79, 209, 197, 0.03) 0%, transparent 55%);
+            --bg-orb3: radial-gradient(circle at 50% 80%, rgba(91, 141, 239, 0.03) 0%, transparent 50%);
+            --panel-bg: rgba(255, 255, 255, 0.52);
+            --panel-bg-hover: rgba(255, 255, 255, 0.7);
+            --panel-border: rgba(0, 0, 0, 0.06);
+            --panel-shadow: 0 8px 38px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.025);
+            --input-bg: rgba(245, 245, 252, 0.58);
+            --input-bg-focus: rgba(255, 255, 255, 0.82);
+            --input-border: rgba(0, 0, 0, 0.1);
+            --input-border-focus: rgba(124, 92, 252, 0.4);
+            --text-primary: #1a1a32;
+            --text-secondary: #4a4a62;
+            --text-muted: #7a7a94;
+            --text-heading: #111128;
+            --text-input: #1a1a34;
+            --placeholder: #9a9ab4;
+            --icon-color: #5c5c76;
+            --divider: rgba(0, 0, 0, 0.06);
+            --scrollbar-thumb: rgba(0, 0, 0, 0.14);
+            --scrollbar-track: transparent;
+            --badge-bg: rgba(124, 92, 252, 0.1);
+            --badge-text: #5b3fcf;
+            --toast-bg: rgba(255, 255, 255, 0.94);
+            --toast-text: #1a1a32;
+            --tab-inactive-bg: rgba(0, 0, 0, 0.02);
+            --tab-active-bg: rgba(124, 92, 252, 0.08);
+            --tab-active-border: rgba(124, 92, 252, 0.45);
+            --strength-bar-bg: rgba(0, 0, 0, 0.06);
+            --nav-bg: rgba(255, 255, 255, 0.48);
+            --nav-border: rgba(0, 0, 0, 0.06);
+            --toggle-bg: rgba(240, 240, 248, 0.68);
+            --toggle-border: rgba(0, 0, 0, 0.1);
+            --hero-glow: 0 0 60px rgba(124, 92, 252, 0.08);
+            --card-spark: rgba(0, 0, 0, 0.008);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-primary);
+            transition: background var(--transition), color var(--transition);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-attachment: fixed;
+            background-size: cover;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: var(--bg-orb1), var(--bg-orb2), var(--bg-orb3);
+            pointer-events: none;
+            z-index: 0;
+            transition: background var(--transition);
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 10px;
+        }
+        .app-wrapper {
+            width: 100%;
+            max-width: 1080px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── HERO HEADER ────────────────── */
+        .hero-header {
+            text-align: center;
+            padding: 8px 0 2px;
+            position: relative;
+        }
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            display: inline-block;
+            line-height: 1.15;
+            text-shadow: var(--hero-glow);
+            animation: titleShimmer 5s ease-in-out infinite;
+            position: relative;
+        }
+        @keyframes titleShimmer {
+            0%,
+            100% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(1.2);
+            }
+        }
+        .hero-subtitle {
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.1px;
+            margin-top: 4px;
+            opacity: 0.8;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+            transition: color var(--transition);
+        }
+        .hero-badge-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .hero-badge {
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            transition: all var(--transition);
+        }
+
+        /* ── HEADER ACTIONS ─────────────── */
+        .header-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .theme-toggle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1.5px solid var(--toggle-border);
+            background: var(--toggle-bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 2;
+        }
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 26px var(--accent-glow);
+            transform: scale(1.07);
+        }
+        .theme-toggle:active {
+            transform: scale(0.9);
+            transition: transform 0.1s ease;
+        }
+        .theme-toggle .icon-sun,
+        .theme-toggle .icon-moon {
+            position: absolute;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            stroke: var(--icon-color);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: none;
+        }
+        [data-theme="dark"] .icon-sun {
+            opacity: 0;
+            transform: rotate(90deg) scale(0.35);
+        }
+        [data-theme="dark"] .icon-moon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+        [data-theme="light"] .icon-sun {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+        [data-theme="light"] .icon-moon {
+            opacity: 0;
+            transform: rotate(-90deg) scale(0.35);
+        }
+        /* ── NAVIGATION TABS ────────────── */
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            background: var(--nav-bg);
+            border-radius: var(--radius-full);
+            padding: 5px;
+            border: 1px solid var(--nav-border);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            align-self: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .nav-tab {
+            flex: 1;
+            min-width: 145px;
+            padding: 12px 22px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid transparent;
+            background: var(--tab-inactive-bg);
+            cursor: pointer;
+            font-family: var(--font);
+            font-weight: 600;
+            font-size: 0.88rem;
+            letter-spacing: 0.1px;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            white-space: nowrap;
+            text-align: center;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+        .nav-tab:hover {
+            color: var(--text-primary);
+            background: var(--tab-active-bg);
+            border-color: rgba(124, 92, 252, 0.25);
+        }
+        .nav-tab.active {
+            background: var(--tab-active-bg);
+            border-color: var(--tab-active-border);
+            color: var(--accent-light);
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(124, 92, 252, 0.16);
+            letter-spacing: 0.2px;
+        }
+        .nav-tab .tab-icon {
+            font-size: 1.05rem;
+        }
+
+        /* ── PAGE CONTAINERS ────────────── */
+        .page-section {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeSlideIn 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .page-section.active {
+            display: flex;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── PANEL ──────────────────────── */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-xl);
+            padding: 26px 24px 22px;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: var(--panel-shadow);
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        .panel::after {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, var(--card-spark) 0%, transparent 70%);
+            pointer-events: none;
+            border-radius: 50%;
+        }
+        .panel:hover {
+            border-color: rgba(124, 92, 252, 0.2);
+            box-shadow: var(--panel-shadow), 0 0 44px rgba(124, 92, 252, 0.07);
+            transform: translateY(-1px);
+        }
+        .panel__title {
+            font-size: 1.12rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            color: var(--text-heading);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            position: relative;
+            z-index: 1;
+        }
+        .panel__title .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            flex-shrink: 0;
+            animation: dotPulse 2.2s ease-in-out infinite;
+        }
+        @keyframes dotPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 6px var(--accent-glow);
+            }
+            50% {
+                box-shadow: 0 0 18px var(--accent-glow), 0 0 30px rgba(124, 92, 252, 0.3);
+            }
+        }
+        .panel__divider {
+            height: 1px;
+            background: var(--divider);
+            border: none;
+            margin: 2px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── FORM ELEMENTS ──────────────── */
+        textarea,
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            font-family: var(--font);
+            font-size: 0.86rem;
+            line-height: 1.55;
+            padding: 13px 15px;
+            border-radius: var(--radius-lg);
+            border: 1.5px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-input);
+            resize: vertical;
+            transition: all var(--transition);
+            outline: none;
+            letter-spacing: 0.1px;
+            position: relative;
+            z-index: 1;
+        }
+        textarea {
+            min-height: 125px;
+            max-height: 360px;
+        }
+        textarea:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            border-color: var(--input-border-focus);
+            background: var(--input-bg-focus);
+            box-shadow: 0 0 0 5px rgba(124, 92, 252, 0.05);
+        }
+        textarea::placeholder,
+        input::placeholder {
+            color: var(--placeholder);
+        }
+        textarea[readonly] {
+            cursor: default;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.2px;
+            word-break: break-all;
+            color: var(--text-secondary);
+        }
+        #decryptedOutput {
+            font-family: var(--font);
+            font-size: 0.86rem;
+            letter-spacing: 0.1px;
+            word-break: normal;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+            min-height: 100px;
+        }
+        /* ── PASSWORD WRAPPER (FIXED) ──── */
+        .password-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+        .password-wrapper input {
+            padding-right: 46px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .pw-toggle {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all var(--transition-fast);
+            z-index: 5;
+            flex-shrink: 0;
+        }
+        .pw-toggle:hover {
+            color: var(--text-primary);
+            background: rgba(128, 128, 160, 0.14);
+        }
+        .pw-toggle svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: all var(--transition-fast);
+            pointer-events: none;
+        }
+
+        /* ── PASSWORD STRENGTH ──────────── */
+        .strength-meter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: -6px;
+            position: relative;
+            z-index: 1;
+        }
+        .strength-bar-track {
+            flex: 1;
+            height: 5px;
+            border-radius: 10px;
+            background: var(--strength-bar-bg);
+            overflow: hidden;
+        }
+        .strength-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s ease, background 0.4s ease;
+            width: 0%;
+            background: #555;
+        }
+        .strength-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            min-width: 44px;
+            text-align: right;
+            transition: color 0.4s ease;
+        }
+
+        /* ── COUNTS ─────────────────────── */
+        .count-row {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: 0.74rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+        }
+        .count-row span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--input-bg);
+            padding: 5px 11px;
+            border-radius: 20px;
+            border: 1px solid var(--input-border);
+            transition: all var(--transition);
+        }
+        .count-row .count-val {
+            font-weight: 700;
+            color: var(--accent-light);
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* ── BUTTONS ────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 11px 21px;
+            border-radius: var(--radius-full);
+            font-family: var(--font);
+            font-weight: 600;
+            font-size: 0.84rem;
+            letter-spacing: 0.1px;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn:active {
+            transform: scale(0.93);
+            transition: transform 0.08s ease;
+        }
+        .btn--primary {
+            background: var(--accent-gradient);
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+        .btn--primary:hover {
+            background: var(--accent-gradient-hover);
+            box-shadow: 0 6px 28px rgba(124, 92, 252, 0.5);
+            transform: translateY(-2px);
+        }
+        .btn--primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            filter: grayscale(18%);
+            transform: none;
+        }
+        .btn--secondary {
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 1.5px solid var(--input-border);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .btn--secondary:hover {
+            border-color: var(--accent);
+            background: var(--panel-bg-hover);
+            color: var(--text-heading);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        .btn--secondary:disabled {
+            opacity: 0.38;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── PRIVACY NOTE ─────────────── */
+        .privacy-note {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+            letter-spacing: 0.2px;
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            opacity: 0.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── DECRYPT REVEAL ─────────────── */
+        #decryptedOutput.revealed {
+            animation: revealText 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes revealText {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            20% {
+                transform: translateX(-6px);
+            }
+            40% {
+                transform: translateX(6px);
+            }
+            60% {
+                transform: translateX(-4px);
+            }
+            80% {
+                transform: translateX(4px);
+            }
+        }
+        .shake {
+            animation: shake 0.5s ease;
+        }
+
+        /* ── INFO SECTION ──────────────── */
+        .info-section {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-xl);
+            padding: 22px 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--panel-shadow);
+            transition: all var(--transition);
+            position: relative;
+            z-index: 1;
+        }
+        .info-section h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 10px;
+            letter-spacing: -0.1px;
+        }
+        .info-section p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 10px;
+            letter-spacing: 0.1px;
+        }
+        .info-section .highlight {
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+        .info-section .improve-note {
+            text-align: center;
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 8px;
+            letter-spacing: 0.2px;
+            opacity: 0.8;
+        }
+        /* ── FOOTER ─────────────────────── */
+        .app-footer {
+            text-align: center;
+            font-size: 0.74rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.2px;
+            padding: 6px 0;
+            opacity: 0.7;
+            transition: color var(--transition);
+            position: relative;
+            z-index: 1;
+        }
+        .app-footer strong {
+            color: var(--accent-light);
+            font-weight: 700;
+        }
+
+        /* ── TOAST (QUICK DISAPPEAR) ────── */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+            max-width: 390px;
+            width: calc(100% - 40px);
+        }
+        @media (max-width: 600px) {
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-width: none;
+            }
+        }
+        .toast {
+            pointer-events: auto;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font);
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1px;
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+            animation: toastIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 1px solid transparent;
+        }
+        .toast.removing {
+            animation: toastOut 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .toast--success {
+            background: var(--success-bg);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: var(--success);
+        }
+        .toast--error {
+            background: var(--error-bg);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: var(--error);
+        }
+        .toast--info {
+            background: var(--info-bg);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--info);
+        }
+        .toast--warning {
+            background: var(--warning-bg);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: var(--warning);
+        }
+        .toast__icon {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+        }
+        .toast__msg {
+            flex: 1;
+            line-height: 1.35;
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(45px) scale(0.85);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(45px) scale(0.82);
+            }
+        }
+
+        /* ── RESPONSIVE ─────────────────── */
+        @media (max-width: 820px) {
+            .hero-title {
+                font-size: 2.1rem;
+                letter-spacing: -0.6px;
+            }
+            .hero-subtitle {
+                font-size: 0.8rem;
+            }
+            .nav-tabs {
+                width: 100%;
+                border-radius: var(--radius-lg);
+                padding: 4px;
+                gap: 3px;
+            }
+            .nav-tab {
+                min-width: 100px;
+                padding: 10px 14px;
+                font-size: 0.78rem;
+                border-radius: var(--radius-md);
+            }
+            .panel {
+                padding: 18px 14px 16px;
+                border-radius: 16px;
+                gap: 12px;
+            }
+            textarea {
+                min-height: 90px;
+                font-size: 0.78rem;
+                padding: 11px;
+            }
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.76rem;
+                border-radius: 40px;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            .hero-title {
+                font-size: 1.7rem;
+            }
+            .app-wrapper {
+                gap: 12px;
+            }
+            .nav-tab {
+                min-width: 70px;
+                padding: 9px 10px;
+                font-size: 0.7rem;
+                gap: 3px;
+            }
+            .panel {
+                padding: 14px 10px 12px;
+                border-radius: 14px;
+                gap: 10px;
+            }
+            textarea {
+                min-height: 70px;
+                font-size: 0.74rem;
+            }
+            .btn-row {
+                gap: 5px;
+            }
+            .info-section {
+                padding: 14px 12px;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- ── HERO HEADER ────────────────── -->
+        <header class="hero-header">
+            <h1 class="hero-title">HudaEncryptions</h1>
+            <p class="hero-subtitle">
+                A free, secure tool to encrypt your private messages before sharing - so only the
+                <strong style="color:var(--accent-light);">intended receiver</strong> can read them.
+            </p>
+            <div class="hero-badge-row">
+                <span class="hero-badge">🔒 AES-256-GCM</span>
+                <span class="hero-badge">🛡️ Zero Data Collection</span>
+                <span class="hero-badge">🌐 Fully Client-Side</span>
+            </div>
+        </header>
+
+        <!-- ── THEME TOGGLE ──────────────── -->
+        <div class="header-actions-row">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle dark/light mode">
+                <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- ── NAVIGATION TABS ───────────── -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-page="sender" aria-label="Sender — Encryption Interface">
+                <span class="tab-icon">🔒</span> Sender (Encrypt)
+            </button>
+            <button class="nav-tab" data-page="receiver" aria-label="Receiver — Decryption Interface">
+                <span class="tab-icon">🔓</span> Receiver (Decrypt)
+            </button>
+        </nav>
+               <!-- ── SENDER PAGE ───────────────── -->
+        <section class="page-section active" id="senderPage">
+            <div class="panel">
+                <h2 class="panel__title"><span class="dot"></span> Encrypt a Message</h2>
+                <hr class="panel__divider">
+                <textarea id="plaintextInput" placeholder="Type or paste your message here… (supports 50,000+ words)" aria-label="Plaintext message"></textarea>
+                <div class="count-row" id="encryptCounts">
+                    <span>📝 Words: <b class="count-val" id="encryptWordCount">0</b></span>
+                    <span>🔤 Letters: <b class="count-val" id="encryptLetterCount">0</b></span>
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" id="encryptPassword" placeholder="Create a strong encryption password" aria-label="Encryption password">
+                    <button type="button" class="pw-toggle" data-target="encryptPassword" aria-label="Toggle password visibility" tabindex="-1">
+                        <svg viewBox="0 0 24 24" class="eye-svg">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="strength-meter" id="strengthMeter">
+                    <div class="strength-bar-track"><div class="strength-bar-fill" id="strengthBarFill"></div></div>
+                    <span class="strength-label" id="strengthLabel">—</span>
+                </div>
+                <button class="btn btn--primary" id="encryptBtn">🔒 Encrypt Now</button>
+                <textarea id="encryptedOutput" readonly placeholder="Encrypted text will appear here…" aria-label="Encrypted output"></textarea>
+                <div class="btn-row">
+                    <button class="btn btn--secondary" id="copyEncryptedBtn" disabled>📋 Copy Encrypted Text</button>
+                    <button class="btn btn--secondary" id="downloadPdfBtn" disabled>📄 Download Encryption key PDF</button>
+                </div>
+                <p class="privacy-note"><span>🛡️</span> Encryption happens locally in your browser. No data is stored or transmitted.</p>
+            </div>
+        </section>
+
+        <!-- ── RECEIVER PAGE ─────────────── -->
+        <section class="page-section" id="receiverPage">
+            <div class="panel">
+                <h2 class="panel__title"><span class="dot"></span> Decrypt a Message</h2>
+                <hr class="panel__divider">
+                <textarea id="encryptedInput" placeholder="Paste the encrypted text here…" aria-label="Encrypted text input"></textarea>
+                <div class="password-wrapper">
+                    <input type="password" id="decryptPassword" placeholder="Enter the decryption password" aria-label="Decryption password">
+                    <button type="button" class="pw-toggle" data-target="decryptPassword" aria-label="Toggle password visibility" tabindex="-1">
+                        <svg viewBox="0 0 24 24" class="eye-svg">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <button class="btn btn--primary" id="decryptBtn">🔓 Decrypt</button>
+                <textarea id="decryptedOutput" readonly placeholder="Decrypted message will appear here…" aria-label="Decrypted output"></textarea>
+                <div class="count-row" id="decryptCounts">
+                    <span>📝 Words: <b class="count-val" id="decryptWordCount">0</b></span>
+                    <span>🔤 Letters: <b class="count-val" id="decryptLetterCount">0</b></span>
+                </div>
+                <button class="btn btn--secondary" id="copyDecryptedBtn" disabled>📋 Copy Decrypted Text</button>
+                <p class="privacy-note"><span>🛡️</span> Decryption happens locally in your browser. No data is stored or transmitted.</p>
+            </div>
+        </section>
+
+        <!-- ── INFO SECTION ──────────────── -->
+        <div class="info-section">
+            <h3>📖 How to Use This Tool (For Everyone)</h3>
+            <p>
+                <span class="highlight">1. Sender (You):</span> Type your secret message in the
+                <strong>Encrypt</strong> tab. Create a strong password — this is the
+                <span class="highlight">key</span> the receiver will need. Click
+                <strong>"Encrypt Now"</strong> and copy the scrambled text that appears. Share this text and the password
+                <em>separately</em> with your receiver (e.g., send the encrypted text via chat and share the password
+                over a phone call).
+            </p>
+            <p>
+                <span class="highlight">2. Receiver (Them):</span> They open this same website, go to the
+                <strong>Decrypt</strong> tab, paste the encrypted text, enter the password you shared, and click
+                <strong>"Decrypt"</strong>. The original message appears instantly — and nobody else can see it.
+            </p>
+            <p style="font-weight:600;color:var(--text-primary);">
+                🔐 <span class="highlight">Why is this needed?</span> In today's digital world, our private conversations —
+                financial details, personal notes, passwords, legal documents — pass through messaging apps and emails
+                that can be intercepted, hacked, or read by unintended eyes. HudaEncryptions ensures that
+                <strong>only the person with the correct password</strong> can unlock your message. Use it whenever you
+                need to share something sensitive: passwords, account details, private addresses, confidential plans, or
+                any information you wouldn't want a stranger to read. It's free, open to everyone, and works entirely on
+                your device — giving you complete control over your privacy.
+            </p>
+            <p class="improve-note">✨ We are trying our best to improve this website — thank you for your trust and support!</p>
+        </div>
+
+        <!-- ── FOOTER ────────────────────── -->
+        <footer class="app-footer">
+            Developed by <strong>SAMSUL</strong>
+        </footer>
+    </div>
+
+    <!-- ── TOAST CONTAINER ──────────────── -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        (function() {
+            const $ = (s) => document.querySelector(s);
+            const $$ = (s) => document.querySelectorAll(s);
+
+            const navTabs = $('#navTabs');
+            const senderPage = $('#senderPage');
+            const receiverPage = $('#receiverPage');
+            const allTabs = $$('.nav-tab');
+
+            const plaintextInput = $('#plaintextInput');
+            const encryptPassword = $('#encryptPassword');
+            const encryptedOutput = $('#encryptedOutput');
+            const encryptBtn = $('#encryptBtn');
+            const copyEncryptedBtn = $('#copyEncryptedBtn');
+            const downloadPdfBtn = $('#downloadPdfBtn');
+            const encryptWordCount = $('#encryptWordCount');
+            const encryptLetterCount = $('#encryptLetterCount');
+            const strengthBarFill = $('#strengthBarFill');
+            const strengthLabel = $('#strengthLabel');
+
+            const encryptedInput = $('#encryptedInput');
+            const decryptPassword = $('#decryptPassword');
+            const decryptedOutput = $('#decryptedOutput');
+            const decryptBtn = $('#decryptBtn');
+            const copyDecryptedBtn = $('#copyDecryptedBtn');
+            const decryptWordCount = $('#decryptWordCount');
+            const decryptLetterCount = $('#decryptLetterCount');
+
+            const themeToggle = $('#themeToggle');
+            const htmlElement = document.documentElement;
+            const toastContainer = $('#toastContainer');
+
+            const WEBSITE_URL = 'https://hudaencryptions.web.app';
+            const PBKDF2_ITERATIONS = 120000;
+            const SALT_BYTES = 16;
+            const IV_BYTES = 12;
+            const AES_KEY_LENGTH = 256;
+            const ENCRYPTED_DATA_VERSION = 1;
+
+            // ── THEME ──────────────────────
+            function getSavedTheme() { try { return localStorage.getItem('huda-theme-v2') || 'dark'; } catch { return 'dark'; } }
+
+            function saveTheme(t) { try { localStorage.setItem('huda-theme-v2', t); } catch {} }
+
+            function applyTheme(t) { htmlElement.setAttribute('data-theme', t);
+                saveTheme(t); }
+            applyTheme(getSavedTheme());
+            themeToggle.addEventListener('click', () => {
+                const cur = htmlElement.getAttribute('data-theme');
+                const nxt = cur === 'dark' ? 'light' : 'dark';
+                applyTheme(nxt);
+                showToast(nxt === 'dark' ? '🌙 Dark mode' : '☀️ Light mode', 'info', 1400);
+            });
+
+            // ── NAVIGATION ─────────────────
+            function switchPage(pageName) {
+                allTabs.forEach(t => t.classList.remove('active'));
+                const targetTab = document.querySelector(`.nav-tab[data-page="${pageName}"]`);
+                if (targetTab) targetTab.classList.add('active');
+                senderPage.classList.remove('active');
+                receiverPage.classList.remove('active');
+                if (pageName === 'sender') senderPage.classList.add('active');
+                else receiverPage.classList.add('active');
+            }
+            navTabs.addEventListener('click', (e) => {
+                const tab = e.target.closest('.nav-tab');
+                if (!tab) return;
+                const page = tab.getAttribute('data-page');
+                if (page) switchPage(page);
+            });
+
+            // ── TOAST (QUICK) ──────────────
+            function showToast(msg, type = 'info', dur = 1800) {
+                const icons = {
+                    success: '<svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+                    error: '<svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+                    warning: '<svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+                    info: '<svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+                };
+                const t = document.createElement('div');
+                t.className = `toast toast--${type}`;
+                t.innerHTML = `${icons[type]||icons.info}<span class="toast__msg">${msg}</span>`;
+                t.addEventListener('click', () => removeToast(t));
+                toastContainer.appendChild(t);
+                const timer = setTimeout(() => removeToast(t), dur);
+                t._timer = timer;
+            }
+
+            function removeToast(t) {
+                if (t._removing) return;
+                t._removing = true;
+                clearTimeout(t._timer);
+                t.classList.add('removing');
+                t.addEventListener('animationend', () => { if (t.parentNode) t.parentNode.removeChild(t); }, { once: true });
+                setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 280);
+            }
+
+            // ── UTILS ──────────────────────
+            function countWords(text) { const trimmed = (text || '').trim(); return trimmed ? trimmed.split(/\s+/)
+                    .length : 0; }
+
+            function countLetters(text) { return (text || '').replace(/\s/g, '').length; }
+
+            function uint8ToBase64(bytes) {
+                let bin = '';
+                const sz = 0x8000;
+                for (let i = 0; i < bytes.length; i += sz) bin += String.fromCharCode.apply(null, bytes.subarray(i,
+                    Math.min(i + sz, bytes.length)));
+                return btoa(bin);
+            }
+
+            function base64ToUint8(b64) {
+                const bin = atob(b64);
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                return bytes;
+            }
+
+            function bufferToUint8(buf) { return new Uint8Array(buf); }
+
+            // ── STRENGTH ───────────────────
+            function evaluateStrength(pw) {
+                if (!pw) return { score: 0, label: '—', color: '#555', pct: 0 };
+                let score = 0;
+                if (pw.length >= 8) score++;
+                if (pw.length >= 12) score++;
+                if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+                if (/[0-9]/.test(pw) || /[^a-zA-Z0-9]/.test(pw)) score++;
+                const map = [
+                    { label: 'Weak', color: 'var(--strength-weak)', pct: 20 },
+                    { label: 'Fair', color: 'var(--strength-fair)', pct: 40 },
+                    { label: 'Good', color: 'var(--strength-good)', pct: 70 },
+                    { label: 'Strong', color: 'var(--strength-strong)', pct: 100 },
+                ];
+                const idx = Math.min(score, map.length - 1);
+                return { ...map[idx], score };
+            }
+
+            function updateStrengthUI() {
+                const res = evaluateStrength(encryptPassword.value);
+                strengthBarFill.style.width = res.pct + '%';
+                strengthBarFill.style.background = res.color;
+                strengthLabel.textContent = res.label;
+                strengthLabel.style.color = res.color;
+            }
+           // ── COUNTS ─────────────────────
+            function updateEncryptCounts() {
+                const t = plaintextInput.value;
+                encryptWordCount.textContent = countWords(t).toLocaleString();
+                encryptLetterCount.textContent = countLetters(t).toLocaleString();
+            }
+
+            function updateDecryptCounts() {
+                const t = decryptedOutput.value;
+                decryptWordCount.textContent = countWords(t).toLocaleString();
+                decryptLetterCount.textContent = countLetters(t).toLocaleString();
+            }
+
+            // ── AES-GCM ENCRYPT ────────────
+            async function encryptMessage(plaintext, password) {
+                if (!plaintext.trim()) throw new Error('Please enter a message to encrypt.');
+                if (!password) throw new Error('Please enter an encryption password.');
+                if (password.length < 4) throw new Error('Password must be at least 4 characters.');
+                const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES));
+                const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
+                const pwKey = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, [
+                    'deriveKey'
+                ]);
+                const aesKey = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS,
+                    hash: 'SHA-256' }, pwKey, { name: 'AES-GCM', length: AES_KEY_LENGTH }, false, ['encrypt']);
+                const encBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, new TextEncoder().encode(
+                    plaintext));
+                const ct = bufferToUint8(encBuf);
+                const payload = { v: ENCRYPTED_DATA_VERSION, s: uint8ToBase64(salt), i: uint8ToBase64(iv), c: uint8ToBase64(
+                        ct) };
+                const finalB64 = uint8ToBase64(new TextEncoder().encode(JSON.stringify(payload)));
+                return { encryptedBase64: finalB64, plaintextLength: plaintext.length };
+            }
+
+            // ── AES-GCM DECRYPT ────────────
+            async function decryptMessage(encB64, password) {
+                if (!encB64.trim()) throw new Error('Please paste the encrypted text.');
+                if (!password) throw new Error('Please enter the decryption password.');
+                let payload;
+                try {
+                    payload = JSON.parse(new TextDecoder().decode(base64ToUint8(encB64.trim())));
+                } catch { throw new Error(
+                        'Invalid encrypted data. The text may be corrupted or not a valid HudaEncryptions message.'); }
+                if (!payload || payload.v !== ENCRYPTED_DATA_VERSION || !payload.s || !payload.i || !payload.c)
+                    throw new Error('Unsupported or corrupted encrypted data. Ensure you copied the entire text.');
+                const salt = base64ToUint8(payload.s);
+                const iv = base64ToUint8(payload.i);
+                const ct = base64ToUint8(payload.c);
+                if (salt.length !== SALT_BYTES || iv.length !== IV_BYTES || ct.length < 1) throw new Error(
+                    'Encrypted data structure is invalid or tampered with.');
+                const pwKey = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, [
+                    'deriveKey'
+                ]);
+                const aesKey = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS,
+                    hash: 'SHA-256' }, pwKey, { name: 'AES-GCM', length: AES_KEY_LENGTH }, false, ['decrypt']);
+                const decBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, ct);
+                return new TextDecoder().decode(decBuf);
+            }
+
+            // ── CLIPBOARD ──────────────────
+            async function copyText(text, successMsg = 'Copied!') {
+                if (!text) { showToast('Nothing to copy.', 'warning', 1400); return; }
+                try {
+                    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+                    else {
+                        const ta = document.createElement('textarea');
+                        ta.value = text;
+                        ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                    }
+                    showToast(successMsg, 'success', 1600);
+                } catch { showToast('Copy failed. Please copy manually.', 'error', 1800); }
+            }
+
+            // ── COLORFUL PDF ───────────────
+            function downloadColorfulPDF(encText, password) {
+                if (typeof window.jspdf === 'undefined' && typeof jsPDF === 'undefined') {
+                    showToast('PDF library not loaded. Refresh the page.', 'error', 2000);
+                    return;
+                }
+                const JSPDF = (window.jspdf?.jsPDF) || jsPDF;
+                const doc = new JSPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+                const pw = doc.internal.pageSize.getWidth();
+                const m = 14;
+                let y = 16;
+
+                // Colorful header banner
+                doc.setFillColor(124, 92, 252);
+                doc.rect(0, 0, pw, 30, 'F');
+                doc.setFillColor(91, 141, 239);
+                doc.rect(0, 28, pw, 6, 'F');
+                doc.setFillColor(79, 209, 197);
+                doc.rect(0, 32, pw, 3, 'F');
+
+                // Title on banner
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(18);
+                doc.setTextColor(255, 255, 255);
+                doc.text('HudaEncryptions', m, 14);
+                doc.setFontSize(8);
+                doc.setFont('Helvetica', 'normal');
+                doc.text('Secure Encryption Record', m, 22);
+                y = 42;
+
+                // Decorative line
+                doc.setDrawColor(124, 92, 252);
+                doc.setLineWidth(0.6);
+                doc.line(m, y, pw - m, y);
+                y += 8;
+
+                // Section: Encrypted Text
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(12);
+                doc.setTextColor(60, 40, 140);
+                doc.text('Encrypted Message', m, y);
+                y += 7;
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(7.5);
+                doc.setTextColor(50, 50, 65);
+                const lines = doc.splitTextToSize(encText, pw - m * 2);
+                doc.text(lines, m, y);
+                y += lines.length * 3.2 + 9;
+
+                // Section: Details
+                doc.setDrawColor(200, 190, 240);
+                doc.setLineWidth(0.3);
+                doc.line(m, y, pw - m, y);
+                y += 7;
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(10);
+                doc.setTextColor(60, 40, 140);
+                doc.text('Important Details', m, y);
+                y += 7;
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(8.5);
+                doc.setTextColor(45, 45, 60);
+                const details = [
+                    { label: 'Decryption Password:', value: password || '(not saved — keep it safe!)' },
+                    { label: 'Website:', value: WEBSITE_URL },
+                    { label: 'Generated On:', value: new Date().toLocaleString() },
+                    { label: 'Encryption Method:', value: 'AES-256-GCM + PBKDF2 (SHA-256, 120k iterations)' },
+                ];
+                details.forEach(d => {
+                    doc.setFont('Helvetica', 'bold');
+                    doc.text(d.label, m, y);
+                    doc.setFont('Helvetica', 'normal');
+                    const lw = doc.getTextWidth(d.label) + 3;
+                    if (d.label.includes('Website:')) {
+                        doc.setTextColor(30, 70, 170);
+                        doc.text(d.value, m + lw, y);
+                        doc.setTextColor(45, 45, 60);
+                    } else {
+                        doc.text(d.value, m + lw, y);
+                    }
+                    y += 7;
+                });
+
+                // Instruction box
+                y += 5;
+                doc.setFillColor(250, 245, 255);
+                doc.setDrawColor(124, 92, 252);
+                doc.setLineWidth(0.4);
+                doc.roundedRect(m, y, pw - m * 2, 22, 3, 3, 'FD');
+                doc.setFont('Helvetica', 'italic');
+                doc.setFontSize(7.5);
+                doc.setTextColor(140, 40, 40);
+                doc.text(
+                    'Instructions: Visit the website above, go to the Receiver (Decrypt) tab, paste the encrypted text, and enter the password.',
+                    m + 4, y + 7, { maxWidth: pw - m * 2 - 8 });
+                doc.text('Keep this document secure. Anyone with the password can decrypt your message.', m + 4, y + 15, {
+                    maxWidth: pw - m * 2 - 8 });
+                y += 30;
+
+                // Footer
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(7);
+                doc.setTextColor(150, 150, 165);
+                doc.text('Generated by HudaEncryptions — Developed by SAMSUL', m, y);
+
+                doc.save('HudaEncryptions_Encrypted_Message.pdf');
+                showToast('📄 Colorful PDF downloaded! Keep it secure.', 'success', 2000);
+            }
+
+            // ── EVENT LISTENERS ────────────
+            plaintextInput.addEventListener('input', updateEncryptCounts);
+            encryptPassword.addEventListener('input', updateStrengthUI);
+
+            encryptBtn.addEventListener('click', async () => {
+                const pt = plaintextInput.value;
+                const pw = encryptPassword.value;
+                encryptBtn.textContent = '⏳ Encrypting…';
+                encryptBtn.disabled = true;
+                try {
+                    const res = await encryptMessage(pt, pw);
+                    encryptedOutput.value = res.encryptedBase64;
+                    encryptedOutput._password = pw;
+                    copyEncryptedBtn.disabled = false;
+                    downloadPdfBtn.disabled = false;
+                    showToast(`✅ Encrypted! (${res.plaintextLength.toLocaleString()} chars)`, 'success', 1800);
+                } catch (e) {
+                    showToast(`Encryption failed: ${e.message}`, 'error', 2200);
+                    encryptedOutput.value = '';
+                    encryptedOutput._password = '';
+                    copyEncryptedBtn.disabled = true;
+                    downloadPdfBtn.disabled = true;
+                } finally {
+                    encryptBtn.textContent = '🔒 Encrypt Now';
+                    encryptBtn.disabled = false;
+                }
+            });
+
+            copyEncryptedBtn.addEventListener('click', () => {
+                if (!encryptedOutput.value) { showToast('Nothing to copy. Encrypt a message first.', 'warning',
+                    1600); return; }
+                copyText(encryptedOutput.value, '📋 Encrypted text copied!');
+            });
+
+            downloadPdfBtn.addEventListener('click', () => {
+                if (!encryptedOutput.value) { showToast('Encrypt a message first.', 'warning', 1500); return; }
+                downloadColorfulPDF(encryptedOutput.value, encryptedOutput._password || encryptPassword.value);
+            });
+
+            decryptBtn.addEventListener('click', async () => {
+                const et = encryptedInput.value;
+                const pw = decryptPassword.value;
+                decryptBtn.textContent = '⏳ Decrypting…';
+                decryptBtn.disabled = true;
+                decryptedOutput.classList.remove('revealed', 'shake');
+                try {
+                    const dec = await decryptMessage(et, pw);
+                    decryptedOutput.value = dec;
+                    decryptedOutput.classList.add('revealed');
+                    copyDecryptedBtn.disabled = false;
+                    updateDecryptCounts();
+                    showToast(`✅ Decrypted! (${countWords(dec).toLocaleString()} words)`, 'success', 1800);
+                } catch (e) {
+                    let msg = e.message;
+                    if (msg.includes('decrypt') || msg.includes('operation') || msg.includes('AES-GCM'))
+                        msg = 'Incorrect password or corrupted data.';
+                    showToast(`Decryption failed: ${msg}`, 'error', 2400);
+                    decryptedOutput.value = '';
+                    copyDecryptedBtn.disabled = true;
+                    decryptWordCount.textContent = '0';
+                    decryptLetterCount.textContent = '0';
+                    decryptedOutput.classList.add('shake');
+                    setTimeout(() => decryptedOutput.classList.remove('shake'), 550);
+                } finally {
+                    decryptBtn.textContent = '🔓 Decrypt';
+                    decryptBtn.disabled = false;
+                }
+            });
+
+            copyDecryptedBtn.addEventListener('click', () => {
+                if (!decryptedOutput.value) { showToast('Nothing to copy. Decrypt a message first.', 'warning',
+                    1600); return; }
+                copyText(decryptedOutput.value, '📋 Decrypted text copied!');
+            });
+
+            // Password visibility toggles
+            $$('.pw-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    if (!input) return;
+                    const isPw = input.type === 'password';
+                    input.type = isPw ? 'text' : 'password';
+                    const svg = btn.querySelector('.eye-svg');
+                    if (svg) {
+                        svg.innerHTML = isPw ?
+                            '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>' :
+                            '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+                    }
+                });
+            });
+
+            // ── INIT ───────────────────────
+            updateEncryptCounts();
+            updateDecryptCounts();
+            updateStrengthUI();
+            if (!encryptedOutput.value) { copyEncryptedBtn.disabled = true;
+                downloadPdfBtn.disabled = true; }
+            if (!decryptedOutput.value) copyDecryptedBtn.disabled = true;
+
+            console.log('%c🔐 HudaEncryptions %cReady — AES-256-GCM | Client-Side Only | Developed by SAMSUL',
+                'font-weight:900;font-size:1.2em;color:#7c5cfc;', 'color:#b0b0c0;font-weight:500;');
+            console.log('%c🛡️ All encryption/decryption happens locally. Zero data collection.',
+            'color:#22c55e;font-weight:500;');
+        })();
+    </script>
+</body>
+</html>
